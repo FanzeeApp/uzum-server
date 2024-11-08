@@ -8,7 +8,7 @@ app.use(express.json());
 
 mongoose
   .connect(
-    "mongodb+srv://fanzeeoff:king2007root@cluster.ii4il.mongodb.net/?retryWrites=true&w=majority&appName=Cluster",
+    "mongodb+srv://fanzeeoff:king2007root@cluster.ii4il.mongodb.net/?retryWrites=true&w=majority&appName=Cluster", // MongoDB URL
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -20,17 +20,23 @@ mongoose
 const Product = mongoose.model(
   "Product",
   new mongoose.Schema({
-    image: String,
-    title: String,
-    description: String,
-    price: Number,
-    oldPrice: Number,
+    image: { type: String, required: true },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    oldPrice: { type: Number, required: false },
   })
 );
 
 app.post("/products", async (req, res) => {
   try {
     const { image, title, description, price, oldPrice } = req.body;
+
+    if (!image || !title || !description || !price) {
+      return res
+        .status(400)
+        .json({ error: "Barcha kerakli ma'lumotlarni to'ldiring" });
+    }
 
     const newProduct = new Product({
       image,
