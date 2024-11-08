@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 const mongoURI =
-  "mongodb+srv://fanzeeoff:<king2007root>@cluster.ii4il.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"; // MongoDB URL
+  "mongodb+srv://fanzeeoff:<db_king2007root>@cluster.ii4il.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"; // MongoDB URL
 
 mongoose
   .connect(mongoURI, {
