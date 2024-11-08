@@ -6,16 +6,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const mongoURI =
+  "mongodb+srv://fanzeeoff:king2007root@cluster.ii4il.mongodb.net/?retryWrites=true&w=majority&appName=Cluster"; // MongoDB URL
+
 mongoose
-  .connect(
-    "mongodb+srv://fanzeeoff:king2007root@cluster.ii4il.mongodb.net/?retryWrites=true&w=majority&appName=Cluster", // MongoDB URL
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
-  .then(() => console.log("MongoDB ga muvaffaqiyatli ulandi"))
-  .catch((error) => console.error("MongoDB ga ulanishda xato:", error));
+  .connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("MongoDB ga muvaffaqiyatli ulandi");
+  })
+  .catch((error) => {
+    console.error("MongoDB ga ulanishda xato:", error);
+  });
 
 const Product = mongoose.model(
   "Product",
