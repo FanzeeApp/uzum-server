@@ -1,39 +1,56 @@
 const express = require("express");
-const cors = require("cors");
+const fs = require("fs");
+const path = require("path");
+const bodyParser = require("body-parser");
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+const PORT = 3000; // O'zingizga kerakli port raqamini kiriting
 
-let products = []; // Vaqtinchalik mahsulotlar massivini yaratamiz
-
-// Mahsulot qo'shish uchun POST yo'li
-app.post("/products", (req, res) => {
-  const { image, title, description, price, oldPrice } = req.body;
-
-  const newProduct = {
-    id: products.length + 1,
-    image,
-    title,
-    description,
-    price,
-    oldPrice,
-  };
-
-  products.push(newProduct); // Mahsulotni massivga qo'shamiz
-  res.status(201).json({
-    message: "Mahsulot muvaffaqiyatli qo'shildi",
-    product: newProduct,
-  });
+app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // CORS ruxsat berish
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  next();
 });
 
-// Barcha mahsulotlarni olish uchun GET yo'li
+const PRODUCTS_FILE = path.join(__dirname, "products.json");
+
+// Mahsulotlarni fayldan o'qish
+function loadProducts() {
+  if (fs.existsSync(PRODUCTS_FILE)) {
+    const data = fs.readFileSync(PRODUCTS_FILE, "utf8");
+    return JSON.parse(data);
+  }
+  return [];
+}
+
+// Mahsulotlarni faylga saqlash
+function saveProducts(products) {
+  fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(products, null, 2));
+}
+
+let products = loadProducts(); // Mahsulotlarni yuklash
+
+// Mahsulotlarni olish uchun GET so'rovi
 app.get("/products", (req, res) => {
-  res.status(200).json(products); // Saqlangan mahsulotlar ro'yxatini qaytaradi
+  res.json(products);
 });
 
-const PORT = process.env.PORT || 3000;
+// Yangi mahsulot qo'shish uchun POST so'rovi
+app.post("/products", (req, res) => {
+  const newProduct = req.body;
+
+  // Ma'lumotlarni tekshirish
+  if (!newProduct.image || !newProduct.title || !newProduct.price) {
+    return res.status(400).json({ error: "Barcha maydonlar talab qilinadi" });
+  }
+
+  products.push(newProduct);
+  saveProducts(products); // Yangi mahsulotni faylga saqlash
+  res.status(201).json(newProduct);
+});
 
 app.listen(PORT, () => {
-  console.log(`Server ${PORT}-portda ishlamoqda`);
+  console.log(`Server ishga tushdi, port: ${PORT}`);
 });
