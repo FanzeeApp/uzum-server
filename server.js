@@ -6,8 +6,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const mongoose = require("mongoose");
-
 mongoose
   .connect(
     "mongodb+srv://fanzeeoff:king2007root@cluster.ii4il.mongodb.net/?retryWrites=true&w=majority&appName=Cluster",
